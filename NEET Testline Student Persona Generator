@@ -1,0 +1,95 @@
+import numpy as np
+from typing import Dict
+
+class StudentPersonaGenerator:
+    PERSONAS = {
+        'The Strategist': {
+            'traits': ['analytical', 'methodical', 'detail-oriented'],
+            'strengths': ['complex problem solving', 'systematic learning']
+        },
+        'The Quick Learner': {
+            'traits': ['adaptable', 'fast comprehension', 'intuitive'],
+            'strengths': ['rapid skill acquisition', 'pattern recognition']
+        },
+        'The Resilient Learner': {
+            'traits': ['persistent', 'growth-minded', 'patient'],
+            'strengths': ['continuous improvement', 'learning from mistakes']
+        }
+    }
+    
+    def __init__(self, performance_metrics: Dict):
+        """
+        Initialize persona generator with performance metrics
+        
+        :param performance_metrics: Dictionary of performance metrics
+        """
+        self.metrics = performance_metrics
+    
+    def generate_persona(self):
+        """
+        Generate student persona based on performance metrics
+        
+        :return: Personalized student persona dictionary
+        """
+        persona_name = self._determine_persona()
+        persona_details = self.PERSONAS[persona_name]
+        
+        persona = {
+            'name': persona_name,
+            'traits': persona_details['traits'],
+            'strengths': persona_details['strengths'],
+            'performance_insights': self._generate_performance_insights()
+        }
+        
+        return persona
+    
+    def _determine_persona(self):
+        """
+        Determine student persona based on performance characteristics
+        
+        :return: Persona name
+        """
+        overall_accuracy = self.metrics.get('overall_accuracy', 50)
+        topic_performance = self.metrics.get('topic_performance', {})
+        
+        performance_variance = np.std(list(topic_performance.values()))
+        
+        if performance_variance < 10:
+            return 'The Strategist'
+        elif overall_accuracy > 70:
+            return 'The Quick Learner'
+        else:
+            return 'The Resilient Learner'
+    
+    def _generate_performance_insights(self):
+        """
+        Generate detailed performance insights
+        
+        :return: Dictionary of performance insights
+        """
+        insights = {
+            'overall_accuracy': self.metrics.get('overall_accuracy', 0),
+            'top_performing_topics': self._get_top_performing_topics(),
+            'improvement_potential': self._calculate_improvement_potential()
+        }
+        return insights
+    
+    def _get_top_performing_topics(self, top_n=3):
+        """
+        Get top performing topics
+        
+        :param top_n: Number of top topics to return
+        :return: List of top performing topics
+        """
+        topic_performance = self.metrics.get('topic_performance', {})
+        sorted_topics = sorted(topic_performance, key=topic_performance.get, reverse=True)
+        return sorted_topics[:top_n]
+    
+    def _calculate_improvement_potential(self):
+        """
+        Calculate student's improvement potential
+        
+        :return: Percentage of potential improvement
+        """
+        overall_accuracy = self.metrics.get('overall_accuracy', 50)
+        return min(100 - overall_accuracy, 50)  # Cap improvement potential
