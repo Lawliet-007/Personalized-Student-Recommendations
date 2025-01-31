@@ -1,0 +1,53 @@
+from data_processor import DataProcessor
+from recommendation_engine import RecommendationEngine
+from student_persona import StudentPersonaGenerator
+
+def analyze_student_performance(quiz_data, historical_data):
+    """
+    Comprehensive student performance analysis
+    
+    :param quiz_data: Current quiz submission data
+    :param historical_data: Historical quiz performance data
+    :return: Complete performance analysis report
+    """
+    # Initialize data processor
+    data_processor = DataProcessor(quiz_data, historical_data)
+    current_quiz, historical_quizzes = data_processor.preprocess_data()
+    
+    # Calculate performance metrics
+    performance_metrics = data_processor.calculate_performance_metrics()
+    
+    # Generate recommendations
+    recommendation_engine = RecommendationEngine(performance_metrics)
+    recommendations = recommendation_engine.generate_recommendations()
+    
+    # Generate student persona
+    persona_generator = StudentPersonaGenerator(performance_metrics)
+    student_persona = persona_generator.generate_persona()
+    
+    # Compile final report
+    analysis_report = {
+        'performance_metrics': performance_metrics,
+        'recommendations': recommendations,
+        'student_persona': student_persona
+    }
+    
+    return analysis_report
+
+def main():
+    # Sample data (would be replaced with actual API calls)
+    quiz_data = [
+        {'question_id': 1, 'topic': 'Biology', 'difficulty': 'hard', 'is_correct': False},
+        {'question_id': 2, 'topic': 'Chemistry', 'difficulty': 'medium', 'is_correct': True}
+    ]
+    
+    historical_data = [
+        {'quiz_id': 1, 'total_score': 60, 'topic_performance': {'Biology': 0.7, 'Chemistry': 0.6}},
+        {'quiz_id': 2, 'total_score': 65, 'topic_performance': {'Biology': 0.75, 'Chemistry': 0.65}}
+    ]
+    
+    analysis_result = analyze_student_performance(quiz_data, historical_data)
+    print(analysis_result)
+
+if __name__ == "__main__":
+    main()
