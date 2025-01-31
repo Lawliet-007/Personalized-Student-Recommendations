@@ -1,0 +1,89 @@
+import numpy as np
+from typing import Dict, List
+
+class RecommendationEngine:
+    def __init__(self, performance_metrics: Dict):
+        """
+        Initialize recommendation engine with performance metrics
+        
+        :param performance_metrics: Dictionary of performance metrics
+        """
+        self.metrics = performance_metrics
+    
+    def generate_recommendations(self):
+        """
+        Generate personalized study recommendations
+        
+        :return: Dictionary of targeted recommendations
+        """
+        recommendations = {
+            'weak_topics': self._identify_weak_topics(),
+            'focus_areas': self._prioritize_improvement_areas(),
+            'study_strategy': self._create_study_strategy()
+        }
+        return recommendations
+    
+    def _identify_weak_topics(self, threshold=50):
+        """
+        Identify topics with performance below threshold
+        
+        :param threshold: Performance threshold percentage
+        :return: List of weak topics
+        """
+        weak_topics = [
+            topic for topic, performance in self.metrics['topic_performance'].items()
+            if performance < threshold
+        ]
+        return weak_topics
+    
+    def _prioritize_improvement_areas(self):
+        """
+        Prioritize improvement areas based on performance metrics
+        
+        :return: Prioritized improvement recommendations
+        """
+        difficulty_performance = self.metrics['difficulty_breakdown']
+        priority_order = sorted(difficulty_performance, key=difficulty_performance.get)
+        
+        return {
+            'lowest_performing_difficulty': priority_order[0],
+            'recommended_difficulty_progression': priority_order
+        }
+    
+    def _create_study_strategy(self):
+        """
+        Create a comprehensive study strategy
+        
+        :return: Study strategy recommendations
+        """
+        strategy = {
+            'practice_focus': self._recommend_practice_topics(),
+            'learning_mode': self._suggest_learning_approach()
+        }
+        return strategy
+    
+    def _recommend_practice_topics(self, top_n=3):
+        """
+        Recommend top practice topics
+        
+        :param top_n: Number of topics to recommend
+        :return: List of recommended practice topics
+        """
+        topic_performance = self.metrics['topic_performance']
+        sorted_topics = sorted(topic_performance, key=topic_performance.get)
+        return sorted_topics[:top_n]
+    
+    def _suggest_learning_approach(self):
+        """
+        Suggest personalized learning approach
+        
+        :return: Learning mode recommendation
+        """
+        overall_accuracy = self.metrics.get('overall_accuracy', 50)
+        
+        if overall_accuracy < 40:
+            return 'Fundamental Review'
+        elif 40 <= overall_accuracy < 60:
+            return 'Targeted Practice'
+        else:
+            return 'Advanced Problem Solving'
