@@ -1,0 +1,66 @@
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Any
+
+class DataProcessor:
+    def __init__(self, quiz_data: Dict[str, Any], historical_data: List[Dict[str, Any]]):
+        """
+        Initialize data processor with current and historical quiz data
+        
+        :param quiz_data: Current quiz submission details
+        :param historical_data: Performance data from last 5 quizzes
+        """
+        self.current_quiz = pd.DataFrame(quiz_data)
+        self.historical_quizzes = pd.DataFrame(historical_data)
+    
+    def preprocess_data(self):
+        """
+        Preprocess and clean quiz data
+        
+        :return: Processed dataframe with unified schema
+        """
+        # Data cleaning and normalization steps
+        self.current_quiz['difficulty'] = self.current_quiz['difficulty'].fillna('medium')
+        self.historical_quizzes['difficulty'] = self.historical_quizzes['difficulty'].fillna('medium')
+        
+        return self.current_quiz, self.historical_quizzes
+    
+    def calculate_performance_metrics(self):
+        """
+        Calculate key performance metrics across quizzes
+        
+        :return: Performance metrics dictionary
+        """
+        metrics = {
+            'overall_accuracy': self.calculate_accuracy(),
+            'topic_performance': self.analyze_topic_performance(),
+            'difficulty_breakdown': self.analyze_difficulty_performance()
+        }
+        return metrics
+    
+    def calculate_accuracy(self):
+        """
+        Calculate overall accuracy across quizzes
+        
+        :return: Accuracy percentage
+        """
+        correct_answers = self.current_quiz[self.current_quiz['is_correct'] == True]
+        return len(correct_answers) / len(self.current_quiz) * 100
+    
+    def analyze_topic_performance(self):
+        """
+        Analyze performance by topic
+        
+        :return: Topic-wise performance dictionary
+        """
+        topic_performance = self.current_quiz.groupby('topic')['is_correct'].mean() * 100
+        return topic_performance.to_dict()
+    
+    def analyze_difficulty_performance(self):
+        """
+        Analyze performance by difficulty level
+        
+        :return: Difficulty-wise performance dictionary
+        """
+        difficulty_performance = self.current_quiz.groupby('difficulty')['is_correct'].mean() * 100
+        return difficulty_performance.to_dict()
